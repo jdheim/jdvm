@@ -1,0 +1,15 @@
+[Unit]
+Description=SSH Agent for UID=%i
+Requires=jdvm-dbus-session@%i.service
+After=jdvm-dbus-session@%i.service
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=simple
+User=%i
+Environment=XDG_RUNTIME_DIR=/run/user/%i
+Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/%i/bus
+ExecStart=/usr/bin/ssh-agent -D -a /run/user/%i/ssh-agent
+Restart=on-failure

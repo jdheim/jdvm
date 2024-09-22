@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=DBeaver
+Exec=dbeaver
+Type=Application
+Icon=/usr/share/icons/apps/dbeaver.png
+StartupWMClass=DBeaver

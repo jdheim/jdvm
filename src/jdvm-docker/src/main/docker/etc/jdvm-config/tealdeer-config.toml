@@ -1,0 +1,4 @@
+# https://tealdeer-rs.github.io/tealdeer/config
+
+[updates]
+auto_update = true
