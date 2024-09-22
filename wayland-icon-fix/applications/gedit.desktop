@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=gEdit
+Exec=gedit
+Type=Application
+Icon=/usr/share/icons/apps/gedit.png
+StartupWMClass=gedit
