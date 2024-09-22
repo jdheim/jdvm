@@ -1,0 +1,41 @@
+name: Attestation Verification - EA
+
+on:
+  workflow_run:
+    workflows: [ "Build, Test and Push Image - EA" ]
+    types: [ "completed" ]
+
+jobs:
+  main:
+    name: Attestation Verification - EA
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Process Resources
+        run: mvn clean process-resources -pl src/jdvm-resources
+      - name: Extract properties
+        run: |
+          echo "IMAGE_NAMESPACE=$(grep "image.namespace=" "src/jdvm-resources/target/project-properties/buildx.properties" | sed "s/.*=//")" >> ${GITHUB_ENV}
+          echo "IMAGE_NAME=$(grep "image.name=" "src/jdvm-resources/target/project-properties/buildx.properties" | sed "s/.*=//")" >> ${GITHUB_ENV}
+          echo "IMAGE_VERSION=$(grep "image.version=" "src/jdvm-resources/target/project-properties/buildx.properties" | sed "s/.*=//")" >> ${GITHUB_ENV}
+      - name: Generate Workflow Stats
+        run: |
+          echo "### Workflow Stats" >> ${GITHUB_STEP_SUMMARY}
+          echo "- GitHub CLI **$(gh --version | grep gh | sed "s/.*version //;s/ (.*//")**" >> ${GITHUB_STEP_SUMMARY}
+          echo "### More information" >> ${GITHUB_STEP_SUMMARY}
+          echo "- [Verifying Provenance and SBOM Attestations](https://github.com/${GITHUB_REPOSITORY_OWNER}/${IMAGE_NAME}/blob/main/docs/provenance-and-sbom.md)" >> ${GITHUB_STEP_SUMMARY}
+      - name: Verify EA Image
+        run: |
+          gh attestation verify oci://docker.io/${IMAGE_NAMESPACE}/${IMAGE_NAME}:${IMAGE_VERSION}-ea --owner "${GITHUB_REPOSITORY_OWNER}"
+      - name: Verify Provenance attached to EA Image
+        run: |
+          docker buildx imagetools inspect ${IMAGE_NAMESPACE}/${IMAGE_NAME}:${IMAGE_VERSION}-ea \
+            --format "{{ json .Provenance.SLSA }}" | grep -q "github.com/${GITHUB_REPOSITORY_OWNER}"
+      - name: Verify SBOM attached to EA Image
+        run: |
+          docker buildx imagetools inspect ${IMAGE_NAMESPACE}/${IMAGE_NAME}:${IMAGE_VERSION}-ea \
+            --format "{{ json .SBOM.SPDX }}" | grep -q "/opt/java"

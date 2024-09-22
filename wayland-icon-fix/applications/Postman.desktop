@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Postman
+Exec=postman
+Type=Application
+Icon=/usr/share/icons/apps/postman.png
+StartupWMClass=Postman

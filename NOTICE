@@ -1,0 +1,41 @@
+NOTICE
+
+© 2024-2025 JDHeim
+
+This project is licensed under the Apache License, Version 2.0.
+See the LICENSE file for full license terms.
+
+This repository defines a Dockerfile that builds a development environment
+based on Ubuntu and includes third-party open-source components.
+
+As with all Docker images, the resulting Docker image includes software licensed under various
+open-source licenses, including but not limited to:
+
+- Apache License 2.0 (e.g. Apache Maven)
+- MIT License (e.g. Git LFS, supporting CLI tools)
+- Mozilla Public License 2.0 (e.g. Firefox browser)
+- GNU General Public License v2 with Classpath Exception (e.g. Eclipse Temurin JDK)
+- GNU General Public License v2 (e.g. Git)
+- GNU General Public License v3 (e.g. Kitty terminal)
+
+These components are included in binary form and retain their original license terms.
+Consult the respective project websites for full licensing details.
+
+As for any pre-built image usage, it is the image user's responsibility to ensure that any use of this image complies with any relevant licenses for all software contained within.
+
+---
+
+LicenseRef-ThirdParty
+
+The SPDX license identifier `LicenseRef-ThirdParty` refers to the collection of third-party
+software components included in the image that are licensed under non-Apache licenses.
+These include, but are not limited to:
+
+- MIT License (e.g. Git LFS, supporting CLI tools)
+- Mozilla Public License 2.0 (e.g. Firefox browser)
+- GNU General Public License v2 with Classpath Exception (e.g. Eclipse Temurin JDK)
+- GNU General Public License v2 (e.g. Git)
+- GNU General Public License v3 (e.g. Kitty terminal)
+
+All third-party software retains its original license terms and is used in accordance
+with the respective licenses under which it was published.

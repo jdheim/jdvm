@@ -1,0 +1,5 @@
+gtk-theme-name="Yaru-blue-dark"
+gtk-icon-theme-name="Yaru"
+gtk-sound-theme-name="freedesktop"
+gtk-enable-event-sounds=1
+gtk-enable-input-feedback-sounds=true

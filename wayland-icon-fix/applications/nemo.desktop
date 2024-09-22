@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Nemo
+Exec=nemo
+Type=Application
+Icon=/usr/share/icons/apps/nemo.png
+StartupWMClass=nemo

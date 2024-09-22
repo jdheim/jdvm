@@ -1,0 +1,17 @@
+[Unit]
+Description=Launchee
+Wants=network-online.target
+After=network-online.target jdvm-dbus-session.service
+Requires=jdvm-dbus-session.service
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=simple
+User=${image.user}
+WorkingDirectory=/home/${image.user}
+ExecStart=/usr/local/bin/jdvm-launcher
+Restart=always
+RestartSec=3s
+KillMode=process

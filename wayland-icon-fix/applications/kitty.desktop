@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Kitty
+Exec=kitty
+Type=Application
+Icon=/usr/share/icons/apps/kitty.png
+StartupWMClass=kitty

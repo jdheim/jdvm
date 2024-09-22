@@ -1,0 +1,33 @@
+project:
+  name: "jdvm"
+  version: "25.08.9-ea"
+  license: "Apache-2.0"
+  versionPattern: "CALVER:YY.0M.MICRO-MODIFIER"
+  snapshot:
+    pattern: ".*-ea"
+
+release:
+  github:
+    releaseName: '{{tagName}}'
+    overwrite: true
+    draft: false
+    prerelease:
+      enabled: true
+      pattern: ".*-ea"
+    issues:
+      # Also add "permissions: issues: write" to GitHub Actions
+      enabled: false
+    changelog:
+      formatted: "ALWAYS"
+      preset: "conventional-commits"
+      extraProperties:
+        categorizeScopes: "true"
+      contentTemplate: "test/jdvm-testcontainers/target/changelog.tpl"
+      categoryTitleFormat: "### {{categoryTitle}}"
+      contributors:
+        format: "- {{contributorName}}{{#contributorUsernameAsLink}} ({{.}}){{/contributorUsernameAsLink}}"
+      hide:
+        contributors:
+          - "p-marcin"
+          - "dependabot"
+          - "GitHub"

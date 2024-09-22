@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ © 2024-2025 JDHeim
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     https://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.jdheim</groupId>
+        <artifactId>jdvm</artifactId>
+        <version>25.08.9</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>jdvm-docker</artifactId>
+    <packaging>pom</packaging>
+
+    <properties>
+        <skip.process-resources>false</skip.process-resources>
+        <skip.remove-builder>false</skip.remove-builder>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.jdheim</groupId>
+            <artifactId>jdvm-resources</artifactId>
+            <classifier>project-properties</classifier>
+            <type>zip</type>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/docker</directory>
+                <targetPath>docker</targetPath>
+                <filtering>false</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/docker</directory>
+                <targetPath>docker</targetPath>
+                <filtering>true</filtering>
+                <includes>
+                    <include>etc/jdvm-systemd/service/*.service</include>
+                    <include>etc/jdvm-templates/base/env</include>
+                    <include>etc/launchee/launchee.yml</include>
+                    <include>scripts/jdvm-versions</include>
+                    <include>Dockerfile</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-project-properties</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.jdheim</groupId>
+                                    <artifactId>jdvm-resources</artifactId>
+                                    <classifier>project-properties</classifier>
+                                    <type>zip</type>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>read-project-properties</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>read-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <files>
+                                <file>${project.build.directory}/project-properties/buildx.properties</file>
+                                <file>${project.build.directory}/project-properties/versions.properties</file>
+                            </files>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <skip>${skip.process-resources}</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>default-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-licenses</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/docker/licenses</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>../..</directory>
+                                    <includes>
+                                        <include>LICENSE</include>
+                                        <include>NOTICE</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>build-image</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>set-git-revision-property</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <exportAntProperties>true</exportAntProperties>
+                                    <target>
+                                        <exec executable="git" outputproperty="git.revision" failifexecutionfails="false">
+                                            <arg value="rev-parse"/>
+                                            <arg value="HEAD"/>
+                                        </exec>
+                                        <!--suppress UnresolvedMavenProperty -->
+                                        <condition property="git.revision" value="${git.revision}">
+                                            <isset property="git.revision"/>
+                                        </condition>
+                                        <condition property="git.revision" value="unknown">
+                                            <not>
+                                                <isset property="git.revision"/>
+                                            </not>
+                                        </condition>
+                                        <!--suppress UnresolvedMavenProperty -->
+                                        <echo>Git Revision: ${git.revision}</echo>
+                                    </target>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>use-builder</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <exportAntProperties>true</exportAntProperties>
+                                    <target>
+                                        <exec executable="docker" resultproperty="builder.used">
+                                            <arg value="buildx"/>
+                                            <arg value="use"/>
+                                            <arg value="${builder.name}"/>
+                                        </exec>
+                                        <condition property="skip.create-builder" else="false">
+                                            <!--suppress UnresolvedMavenProperty -->
+                                            <equals arg1="${builder.used}" arg2="0"/>
+                                        </condition>
+                                        <!--suppress UnresolvedMavenProperty -->
+                                        <echo>${builder.name} used: ${skip.create-builder}</echo>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>create-builder</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <!--suppress UnresolvedMavenProperty -->
+                                    <skip>${skip.create-builder}</skip>
+                                    <executable>docker</executable>
+                                    <arguments>
+                                        <argument>buildx</argument>
+                                        <argument>create</argument>
+                                        <argument>--name=${builder.name}</argument>
+                                        <argument>--driver=docker-container</argument>
+                                        <argument>--bootstrap</argument>
+                                        <argument>--use</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>build-image</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>docker</executable>
+                                    <arguments>
+                                        <argument>buildx</argument>
+                                        <argument>build</argument>
+                                        <argument>--platform=linux/amd64</argument>
+                                        <argument>${docker.buildx.build.output}</argument>
+                                        <argument>${docker.buildx.build.provenance}</argument>
+                                        <argument>${docker.buildx.build.sbom}</argument>
+                                        <argument>--build-arg=BUILD_TIMESTAMP=${build.timestamp}</argument>
+                                        <argument>--tag=${image.namespace}/${image.name}:${image.version}${image.tag.ea}</argument>
+                                        <argument>--tag=${image.namespace}/${image.name}:latest${image.tag.ea}</argument>
+                                        <argument>${project.build.directory}/docker</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>remove-builder</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>${skip.remove-builder}</skip>
+                                    <executable>docker</executable>
+                                    <arguments>
+                                        <argument>buildx</argument>
+                                        <argument>rm</argument>
+                                        <argument>${docker.buildx.rm.keep.state}</argument>
+                                        <argument>${builder.name}</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>remove-unused-images</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>docker</executable>
+                                    <arguments>
+                                        <argument>image</argument>
+                                        <argument>prune</argument>
+                                        <argument>--force</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>github-actions</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>properties-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>read-project-github-actions-properties</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>read-project-properties</goal>
+                                </goals>
+                                <configuration>
+                                    <files>
+                                        <file>${project.build.directory}/project-properties/buildx-github-actions.properties</file>
+                                    </files>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>ea</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>properties-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>read-project-ea-properties</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>read-project-properties</goal>
+                                </goals>
+                                <configuration>
+                                    <files>
+                                        <file>${project.build.directory}/project-properties/buildx-ea.properties</file>
+                                    </files>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>remove-buildx-cache</id>
+            <properties>
+                <docker.buildx.rm.keep.state>--keep-state=false</docker.buildx.rm.keep.state>
+            </properties>
+        </profile>
+        <profile>
+            <id>skip-process-resources</id>
+            <properties>
+                <skip.process-resources>true</skip.process-resources>
+            </properties>
+        </profile>
+        <profile>
+            <id>skip-remove-builder</id>
+            <properties>
+                <skip.remove-builder>true</skip.remove-builder>
+            </properties>
+        </profile>
+        <profile>
+            <id>lint-dockerfile-linux</id>
+            <activation>
+                <os>
+                    <family>unix</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>lint-dockerfile</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>sh</executable>
+                                    <arguments>
+                                        <argument>-c</argument>
+                                        <argument>docker run --rm -i hadolint/hadolint hadolint --ignore DL3008 - &lt; ${project.build.directory}/docker/Dockerfile</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>lint-dockerfile-windows</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>lint-dockerfile</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>cmd</executable>
+                                    <arguments>
+                                        <argument>/c</argument>
+                                        <argument>type ${project.build.directory}\docker\Dockerfile | docker run --rm -i hadolint/hadolint hadolint --ignore DL3008 -</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>

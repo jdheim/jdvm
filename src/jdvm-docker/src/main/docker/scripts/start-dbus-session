@@ -1,0 +1,93 @@
+#!/bin/bash
+# STARTS DBUS SESSION
+
+#
+# © 2024-2025 JDHeim
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+readonly STEP="[\e[1;96mSTEP\e[0m]"
+readonly LINE="\e[1;96m-----\e[0m"
+readonly INFO="[\e[1;34mINFO\e[0m]"
+readonly WARNING="[\e[1;33mWARNING\e[0m]"
+readonly ERROR="[\e[1;31mERROR\e[0m]"
+
+main() {
+  readEnv
+  initRuntimeDir
+  symlinkWaylandDisplay
+  symlinkX11Display
+  startDbus
+}
+
+step() {
+  local message="${1}"
+  echo -e "${STEP} ${LINE} ${message} ${LINE}"
+}
+
+readEnv() {
+  step "Read all env variables"
+  if [[ -f "${HOME}/.zshenv" ]]; then
+    . "${HOME}/.zshenv"
+  fi
+}
+
+initRuntimeDir() {
+  step "Initialize ${USER} XDG Runtime Dir"
+  if [[ -z "${XDG_RUNTIME_DIR}" ]]; then
+    echo -e "${ERROR} XDG_RUNTIME_DIR env variable is not set"
+    exit 1
+  fi
+  if [[ ! -d "${XDG_RUNTIME_DIR}" ]]; then
+    sudo mkdir -v "${XDG_RUNTIME_DIR}"
+    sudo chmod -v 700 "${XDG_RUNTIME_DIR}"
+    sudo chown -v "${USER}":"${USER}" "${XDG_RUNTIME_DIR}"
+  else
+    echo -e "${WARNING} Runtime dir: ${XDG_RUNTIME_DIR} already exists"
+  fi
+}
+
+symlinkWaylandDisplay() {
+  step "Symlink Wayland Display"
+  local waylandRuntimeDir="${WAYLAND_RUNTIME_DIR:-/mnt/wslg/runtime-dir}"
+  if [[ -n "${WAYLAND_DISPLAY}" && ! -e "${XDG_RUNTIME_DIR}/wayland-0" && -e "${waylandRuntimeDir}/wayland-0" ]]; then
+    ln -v --symbolic --force "${waylandRuntimeDir}/wayland-0" "${XDG_RUNTIME_DIR}/wayland-0"
+    ln -v --symbolic --force "${waylandRuntimeDir}/wayland-0.lock" "${XDG_RUNTIME_DIR}/wayland-0.lock"
+  else
+    echo -e "Nothing to symlink"
+  fi
+}
+
+symlinkX11Display() {
+  step "Symlink X11 Display"
+  local x11RuntimeDir="${X11_RUNTIME_DIR:-/mnt/wslg}"
+  if [[ ! -e "/tmp/.X11-unix" && -e "${x11RuntimeDir}/.X11-unix" ]]; then
+    ln -v --symbolic --force "${x11RuntimeDir}/.X11-unix" "/tmp/.X11-unix"
+  else
+    echo -e "Nothing to symlink"
+  fi
+}
+
+startDbus() {
+  step "Start D-Bus"
+  export DBUS_SESSION_BUS_ADDRESS="unix:path=${XDG_RUNTIME_DIR}/bus"
+  if [[ ! -e "${XDG_RUNTIME_DIR}/bus" ]]; then
+    ( dbus-daemon --session --address="${DBUS_SESSION_BUS_ADDRESS}" --nofork --nopidfile --syslog-only & )
+    echo -e "${INFO} D-Bus per-session daemon address is: ${DBUS_SESSION_BUS_ADDRESS}"
+  else
+    echo -e "${WARNING} D-Bus is running: ${XDG_RUNTIME_DIR}/bus already exists"
+  fi
+}
+
+main

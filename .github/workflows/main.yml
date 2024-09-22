@@ -1,0 +1,102 @@
+name: Build, Test and Push Image
+
+on: workflow_dispatch
+
+jobs:
+  main:
+    name: Build, Test and Push Image
+    runs-on: ubuntu-latest
+    permissions:
+      attestations: write
+      contents: write
+      id-token: write
+    steps:
+      - name: Prune Docker
+        run: docker system prune --all --volumes --force
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Process Resources
+        run: mvn clean process-resources --batch-mode -pl src/jdvm-resources
+      - name: Extract properties
+        run: |
+          echo "JDK_LTS_VERSION=$(grep "jdk-lts.version=" "src/jdvm-resources/target/project-properties/versions.properties" | sed "s/.*=//")" >> ${GITHUB_ENV}
+          echo "IMAGE_NAMESPACE=$(grep "image.namespace=" "src/jdvm-resources/target/project-properties/buildx.properties" | sed "s/.*=//")" >> ${GITHUB_ENV}
+          echo "IMAGE_NAME=$(grep "image.name=" "src/jdvm-resources/target/project-properties/buildx.properties" | sed "s/.*=//")" >> ${GITHUB_ENV}
+          echo "IMAGE_VERSION=$(grep "image.version=" "src/jdvm-resources/target/project-properties/buildx.properties" | sed "s/.*=//")" >> ${GITHUB_ENV}
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JDK_LTS_VERSION }}
+          distribution: temurin
+          cache: maven
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        id: setup-docker-buildx
+      - name: Generate Workflow Stats
+        run: |
+          echo "### Workflow Stats" >> ${GITHUB_STEP_SUMMARY}
+          echo "- Java **$(java --version | grep "openjdk" | sed "s/openjdk \([^ ]*\) .*/\1/")**" >> ${GITHUB_STEP_SUMMARY}
+          echo "- Maven **$(mvn --batch-mode --version | grep "Apache Maven" | sed "s/.*Maven //;s/ (.*//")**" >> ${GITHUB_STEP_SUMMARY}
+          echo "- Docker Client **$(docker version --format "{{.Client.Version}}")**" >> ${GITHUB_STEP_SUMMARY}
+          echo "- Docker Server **$(docker version --format "{{.Server.Version}}")**" >> ${GITHUB_STEP_SUMMARY}
+          echo "- Docker Buildx **$(docker buildx version | sed "s/.* v//;s/ .*//")**" >> ${GITHUB_STEP_SUMMARY}
+      - name: Log in to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build and Push EA Image
+        run: |
+          mvn clean install --batch-mode -Dbuilder.name=${{ steps.setup-docker-buildx.outputs.name }} -Pea,build-image,github-actions,skip-remove-builder -pl '!test/jdvm-testcontainers'
+          df -h | grep -A 1 "Filesystem"; docker system df
+      - name: Test EA Image
+        run: |
+          mvn clean install --batch-mode -Pea,integration-tests,prepare-release -pl 'test/jdvm-testcontainers'
+          df -h | grep -A 1 "Filesystem"; docker system df
+      - name: Remove EA Image from local repository
+        run: |
+          docker image rm ${IMAGE_NAMESPACE}/${IMAGE_NAME}:${IMAGE_VERSION}-ea
+          df -h | grep -A 1 "Filesystem"; docker system df
+      - name: Verify Provenance attached to EA Image
+        run: |
+          docker buildx imagetools inspect ${IMAGE_NAMESPACE}/${IMAGE_NAME}:${IMAGE_VERSION}-ea \
+            --format "{{ json .Provenance.SLSA }}" | grep -q "github.com/${GITHUB_REPOSITORY_OWNER}"
+      - name: Verify SBOM attached to EA Image
+        run: |
+          docker buildx imagetools inspect ${IMAGE_NAMESPACE}/${IMAGE_NAME}:${IMAGE_VERSION}-ea \
+            --format "{{ json .SBOM.SPDX }}" | grep -q "/opt/java"
+      - name: Push Image
+        run: |
+          mvn install --batch-mode -Dbuilder.name=${{ steps.setup-docker-buildx.outputs.name }} -Pbuild-image,github-actions,skip-process-resources,remove-buildx-cache -pl 'src/jdvm-docker'
+          df -h | grep -A 1 "Filesystem"; docker system df
+      - name: Extract digest of Image
+        id: digest
+        run: |
+          digest=$(docker buildx imagetools inspect ${IMAGE_NAMESPACE}/${IMAGE_NAME}:${IMAGE_VERSION} --format "{{ json .Manifest.Digest }}" | jq -r)
+          echo "DIGEST=${digest}" >> ${GITHUB_OUTPUT}
+      - name: Attest Provenance of Image
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: index.docker.io/${{ env.IMAGE_NAMESPACE }}/${{ env.IMAGE_NAME }}
+          subject-digest: ${{ steps.digest.outputs.DIGEST }}
+      - name: Prepare JReleaser changelog template
+        run: printf "## Changelog\n\n{{changelogChanges}}{{changelogContributors}}%s" "$(cat test/jdvm-testcontainers/target/versions.md)" > "test/jdvm-testcontainers/target/changelog.tpl"
+      - name: Run JReleaser
+        uses: jreleaser/release-action@v2
+        env:
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JRELEASER_PROJECT_VERSION: ${{ env.IMAGE_VERSION }}
+        with:
+          version: latest
+          arguments: release
+          setup-java: false
+      - name: Upload JReleaser output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jreleaser-release
+          path: |
+            out/jreleaser/trace.log
+            out/jreleaser/output.properties
