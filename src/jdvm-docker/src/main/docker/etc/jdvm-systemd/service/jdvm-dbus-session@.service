@@ -1,0 +1,14 @@
+[Unit]
+Description=D-Bus Session for UID=%i
+Requires=dbus.service
+After=dbus.service
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=simple
+User=%i
+Environment=XDG_RUNTIME_DIR=/run/user/%i
+ExecStart=/usr/local/bin/start-dbus-session
+Restart=on-failure
