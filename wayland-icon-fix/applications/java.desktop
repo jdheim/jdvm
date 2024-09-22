@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Java
+Exec=java
+Type=Application
+Icon=/usr/share/icons/apps/java.png
+StartupWMClass=java

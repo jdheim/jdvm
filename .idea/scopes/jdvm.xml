@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="jdvm" pattern="file:*/&amp;&amp;!mvnw&amp;&amp;!mvnw.cmd&amp;&amp;!file:.mvn//*&amp;&amp;!file:*/betterfox-user.js&amp;&amp;!file:*/p10k.zsh&amp;&amp;!file:.idea//*" />
+</component>

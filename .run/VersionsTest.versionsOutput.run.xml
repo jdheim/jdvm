@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="VersionsTest.versionsOutput" type="JUnit" factoryName="JUnit" nameIsGenerated="true">
+    <module name="jdvm-testcontainers" />
+    <option name="PACKAGE_NAME" value="com.jdheim.jdvm.testcontainers" />
+    <option name="MAIN_CLASS_NAME" value="com.jdheim.jdvm.testcontainers.VersionsTest" />
+    <option name="METHOD_NAME" value="versionsOutput" />
+    <option name="TEST_OBJECT" value="method" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

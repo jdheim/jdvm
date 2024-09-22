@@ -1,0 +1,78 @@
+{
+  "__COMMENT__ More Information": "https://github.com/mozilla/policy-templates/tree/master#readme",
+  "policies": {
+    "DisableAppUpdate": true,
+    "DisableFirefoxStudies": true,
+    "DisableTelemetry": true,
+    "DisableFeedbackCommands": true,
+    "DisablePocket": true,
+    "DisableSetDesktopBackground": true,
+    "DontCheckDefaultBrowser": true,
+    "DefaultDownloadDirectory": "${home}",
+    "DownloadDirectory": "${home}",
+    "PromptForDownloadLocation": true,
+    "DisplayBookmarksToolbar": "always",
+    "NoDefaultBookmarks": true,
+    "ManagedBookmarks": [
+      {
+        "toplevel_name": "JDVM"
+      },
+      {
+        "url": "https://github.com/jdheim/jdvm",
+        "name": "Home"
+      },
+      {
+        "url": "https://github.com/jdheim/jdvm/discussions",
+        "name": "Discussions"
+      },
+      {
+        "url": "https://github.com/jdheim/jdvm/issues",
+        "name": "Support"
+      }
+    ],
+    "Bookmarks": [
+      {
+        "Title": "DEV.java",
+        "URL": "https://dev.java",
+        "Placement": "toolbar"
+      },
+      {
+        "Title": "localhost:80",
+        "URL": "http://localhost",
+        "Placement": "toolbar"
+      },
+      {
+        "Title": "localhost:443",
+        "URL": "https://localhost",
+        "Placement": "toolbar"
+      }
+    ],
+    "ExtensionSettings": {
+      "uBlock0@raymondhill.net": {
+        "installation_mode": "normal_installed",
+        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi"
+      }
+    },
+    "SearchEngines": {
+      "Add": [
+        {
+          "Name": "Brave",
+          "URLTemplate": "https://search.brave.com/search?q={searchTerms}",
+          "IconURL": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTYiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA1NiA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTUzLjI5MiAxNS4zMjFsMS41LTMuNjc2cy0xLjkwOS0yLjA0My00LjIyNy00LjM1OGMtMi4zMTctMi4zMTUtNy4yMjUtLjk1My03LjIyNS0uOTUzTDM3Ljc1MSAwSDE4LjEybC01LjU4OSA2LjMzNHMtNC45MDgtMS4zNjItNy4yMjUuOTUzQzIuOTg4IDkuNjAyIDEuMDggMTEuNjQ1IDEuMDggMTEuNjQ1bDEuNSAzLjY3Ni0xLjkxIDUuNDQ3czUuNjE0IDIxLjIzNiA2LjI3MiAyMy44M2MxLjI5NSA1LjEwNiAyLjE4MSA3LjA4IDUuODYyIDkuNjY4IDMuNjggMi41ODcgMTAuMzYgNy4wOCAxMS40NSA3Ljc2MiAxLjA5MS42OCAyLjQ1NSAxLjg0IDMuNjgyIDEuODQgMS4yMjcgMCAyLjU5LTEuMTYgMy42OC0xLjg0IDEuMDkxLS42ODEgNy43Ny01LjE3NSAxMS40NTItNy43NjIgMy42OC0yLjU4NyA0LjU2Ny00LjU2MiA1Ljg2Mi05LjY2OC42NTctMi41OTQgNi4yNy0yMy44MyA2LjI3LTIzLjgzbC0xLjkwOC01LjQ0N3oiIGZpbGw9InVybCgjcGFpbnQwX2xpbmVhcikiLz48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTM0Ljg4OCAxMS41MDhjLjgxOCAwIDYuODg1LTEuMTU3IDYuODg1LTEuMTU3czcuMTg5IDguNjggNy4xODkgMTAuNTM2YzAgMS41MzQtLjYxOSAyLjEzNC0xLjM0NyAyLjg0Mi0uMTUyLjE0OC0uMzEuMy0uNDY3LjQ2OGwtNS4zOSA1LjcxN2E5LjQyIDkuNDIgMCAwMS0uMTc2LjE4Yy0uNTM4LjU0LTEuMzMgMS4zMzYtLjc3MiAyLjY1OGwuMTE1LjI2OWMuNjEzIDEuNDMyIDEuMzcgMy4yLjQwNyA0Ljk5LTEuMDI1IDEuOTA2LTIuNzggMy4xNzgtMy45MDUgMi45NjctMS4xMjQtLjIxLTMuNzY2LTEuNTg5LTQuNzM3LTIuMjE4LS45NzEtLjYzLTQuMDUtMy4xNjYtNC4wNS00LjEzNyAwLS44MDkgMi4yMTQtMi4xNTUgMy4yOS0yLjgxLjIxNC0uMTMuMzgzLS4yMzIuNDgtLjI5OC4xMTEtLjA3NS4yOTctLjE5LjUyNi0uMzMyLjk4MS0uNjEgMi43NTQtMS43MSAyLjc5OS0yLjE5Ny4wNTUtLjYwMi4wMzQtLjc3OC0uNzU4LTIuMjY0LS4xNjgtLjMxNi0uMzY1LS42NTQtLjU2OC0xLjAwNC0uNzU0LTEuMjk1LTEuNTk4LTIuNzQ1LTEuNDEtMy43ODQuMjEtMS4xNzMgMi4wNS0xLjg0NSAzLjYwOC0yLjQxNS4xOTQtLjA3LjM4NS0uMTQuNTY3LS4yMDlsMS42MjMtLjYwOWMxLjU1Ni0uNTgyIDMuMjg0LTEuMjI5IDMuNTctMS4zNi4zOTQtLjE4MS4yOTItLjM1NS0uOTAzLS40NjhhNTQuNjU1IDU0LjY1NSAwIDAxLS41OC0uMDZjLTEuNDgtLjE1Ny00LjIwOS0uNDQ2LTUuNTM1LS4wNzctLjI2MS4wNzMtLjU1My4xNTItLjg2LjIzNS0xLjQ5LjQwMy0zLjMxNy44OTctMy40OTMgMS4xODItLjAzLjA1LS4wNi4wOTMtLjA4OS4xMzMtLjE2OC4yMzgtLjI3Ny4zOTQtLjA5MSAxLjQwNi4wNTUuMzAyLjE2OS44OTUuMzEgMS42MjkuNDEgMi4xNDggMS4wNTMgNS40OTggMS4xMzQgNi4yNS4wMTEuMTA2LjAyNC4yMDcuMDM2LjMwNS4xMDMuODQuMTcxIDEuMzk5LS44MDUgMS42MjJsLS4yNTUuMDU4Yy0xLjEwMi4yNTItMi43MTcuNjIzLTMuMy42MjMtLjU4NCAwLTIuMi0uMzctMy4zMDItLjYyM2wtLjI1NC0uMDU4Yy0uOTc2LS4yMjMtLjkwNy0uNzgyLS44MDQtMS42MjIuMDEyLS4wOTguMDI0LS4yLjAzNS0uMzA1LjA4MS0uNzUzLjcyNS00LjExMiAxLjEzNy02LjI1OS4xNC0uNzMuMjUzLTEuMzIuMzA4LTEuNjIuMTg1LTEuMDEyLjA3Ni0xLjE2OC0uMDkyLTEuNDA2YTMuNzQzIDMuNzQzIDAgMDEtLjA5LS4xMzNjLS4xNzQtLjI4NS0yLS43NzktMy40OTEtMS4xODItLjMwNy0uMDgzLS42LS4xNjItLjg2LS4yMzUtMS4zMjctLjM3LTQuMDU1LS4wOC01LjUzNS4wNzctLjIyNi4wMjQtLjQyMi4wNDUtLjU4LjA2LTEuMTk2LjExMy0xLjI5Ny4yODctLjkwMy40NjguMjg1LjEzMSAyLjAxMy43NzggMy41NjggMS4zNi41OTcuMjIzIDEuMTcuNDM3IDEuNjI0LjYwOS4xODMuMDY5LjM3My4xMzguNTY4LjIxIDEuNTU4LjU3IDMuMzk4IDEuMjQxIDMuNjA4IDIuNDE0LjE4NyAxLjAzOS0uNjU3IDIuNDg5LTEuNDEgMy43ODQtLjIwNC4zNS0uNC42ODgtLjU2OSAxLjAwNC0uNzkxIDEuNDg2LS44MTIgMS42NjItLjc1NyAyLjI2NC4wNDQuNDg4IDEuODE2IDEuNTg3IDIuNzk4IDIuMTk3LjIyOS4xNDIuNDE1LjI1Ny41MjYuMzMyLjA5OC4wNjYuMjY2LjE2OC40OC4yOTggMS4wNzYuNjU0IDMuMjkgMiAzLjI5IDIuODEgMCAuOTctMy4wNzggMy41MDctNC4wNSA0LjEzNy0uOTcuNjMtMy42MTIgMi4wMDgtNC43MzcgMi4yMTgtMS4xMjQuMjEtMi44OC0xLjA2MS0zLjkwNC0yLjk2Ni0uOTYzLTEuNzkxLS4yMDctMy41NTkuNDA2LTQuOTlsLjExNS0uMjdjLjU1OS0xLjMyMi0uMjMzLTIuMTE4LS43NzItMi42NThhOS4zNzcgOS4zNzcgMCAwMS0uMTc1LS4xOGwtNS4zOS01LjcxN2MtLjE1OC0uMTY3LS4zMTYtLjMyLS40NjgtLjQ2OC0uNzI4LS43MDctMS4zNDYtMS4zMDgtMS4zNDYtMi44NDIgMC0xLjg1NSA3LjE4OS0xMC41MzYgNy4xODktMTAuNTM2czYuMDY2IDEuMTU3IDYuODg0IDEuMTU3Yy42NTMgMCAxLjkxMy0uNDMzIDMuMjI3LS44ODUuMzMzLS4xMTQuNjY5LS4yMyAxLS4zNCAxLjYzNS0uNTQ1IDIuNzI2LS41NDkgMi43MjYtLjU0OXMxLjA5LjAwNCAyLjcyNi41NDljLjMzLjExLjY2Ny4yMjYgMSAuMzQgMS4zMTMuNDUyIDIuNTc0Ljg4NSAzLjIyNi44ODV6bS0xLjA0MSAzMC43MDZjMS4yODIuNjYgMi4xOTIgMS4xMjggMi41MzYgMS4zNDMuNDQ1LjI3OC4xNzQuODAzLS4yMzIgMS4wOS0uNDA1LjI4NS01Ljg1MyA0LjQ5OS02LjM4MSA0Ljk2NWwtLjIxNS4xOTFjLS41MDkuNDU5LTEuMTU5IDEuMDQ0LTEuNjIgMS4wNDQtLjQ2IDAtMS4xMS0uNTg2LTEuNjItMS4wNDRsLS4yMTMtLjE5MWMtLjUzLS40NjYtNS45NzctNC42OC02LjM4Mi00Ljk2Ni0uNDA1LS4yODYtLjY3Ny0uODEtLjIzMi0xLjA5LjM0NC0uMjE0IDEuMjU1LS42ODMgMi41MzktMS4zNDRsMS4yMi0uNjI5YzEuOTItLjk5MiA0LjMxNS0xLjgzNyA0LjY4OS0xLjgzNy4zNzMgMCAyLjc2Ny44NDQgNC42ODkgMS44MzcuNDM2LjIyNi44NDUuNDM3IDEuMjIyLjYzeiIgZmlsbD0iI2ZmZiIvPjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNDMuMzQgNi4zMzRMMzcuNzUxIDBIMTguMTJsLTUuNTg5IDYuMzM0cy00LjkwOC0xLjM2Mi03LjIyNS45NTNjMCAwIDYuNTQ0LS41OSA4Ljc5MyAzLjA2NCAwIDAgNi4wNjYgMS4xNTcgNi44ODQgMS4xNTcuODE4IDAgMi41OS0uNjggNC4yMjYtMS4yMjUgMS42MzYtLjU0NSAyLjcyNy0uNTQ5IDIuNzI3LS41NDlzMS4wOS4wMDQgMi43MjYuNTQ5IDMuNDA4IDEuMjI1IDQuMjI2IDEuMjI1Yy44MTggMCA2Ljg4NS0xLjE1NyA2Ljg4NS0xLjE1NyAyLjI0OS0zLjY1NCA4Ljc5Mi0zLjA2NCA4Ljc5Mi0zLjA2NC0yLjMxNy0yLjMxNS03LjIyNS0uOTUzLTcuMjI1LS45NTN6IiBmaWxsPSJ1cmwoI3BhaW50MV9saW5lYXIpIi8+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJwYWludDBfbGluZWFyIiB4MT0iLjY3MSIgeTE9IjY0LjMxOSIgeDI9IjU1LjIiIHkyPSI2NC4zMTkiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBzdG9wLWNvbG9yPSIjRjUwIi8+PHN0b3Agb2Zmc2V0PSIuNDEiIHN0b3AtY29sb3I9IiNGNTAiLz48c3RvcCBvZmZzZXQ9Ii41ODIiIHN0b3AtY29sb3I9IiNGRjIwMDAiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNGRjIwMDAiLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0icGFpbnQxX2xpbmVhciIgeDE9IjYuMjc4IiB5MT0iMTEuNDY2IiB4Mj0iNTAuNTY1IiB5Mj0iMTEuNDY2IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHN0b3Agc3RvcC1jb2xvcj0iI0ZGNDUyQSIvPjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI0ZGMjAwMCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjwvc3ZnPg==",
+          "Alias": "@brave"
+        }
+      ],
+      "Remove": [
+        "Bing",
+        "eBay",
+        "Wikipedia (en)"
+      ],
+      "Default": "DuckDuckGo"
+    },
+    "SupportMenu": {
+      "Title": "JDVM Support",
+      "URL": "https://github.com/jdheim/jdvm/issues",
+      "AccessKey": "S"
+    }
+  }
+}

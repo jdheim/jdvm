@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=IntelliJ IDEA
+Exec=idea
+Type=Application
+Icon=/usr/share/icons/apps/jetbrains-idea.png
+StartupWMClass=jetbrains-idea
